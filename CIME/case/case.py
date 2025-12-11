@@ -707,7 +707,7 @@ class Case(object):
         science_support = []
         compset_alias = None
         components = files.get_components("COMPSETS_SPEC_FILE")
-        logger.debug(
+        logger.info(
             " Possible components for COMPSETS_SPEC_FILE are {}".format(components)
         )
 
@@ -730,6 +730,7 @@ class Case(object):
         # that has a match for either the alias or the longname in that order
         for component in components:
             # Determine the compsets file for this component
+            logger.info("HELEN component {}".format(component))
             compsets_filename = files.get_value(
                 "COMPSETS_SPEC_FILE", {"component": component}
             )
@@ -1164,7 +1165,7 @@ class Case(object):
                 ),
             )
             logger.info(
-                "{} component is {}".format(
+                "HELEN {} component is {}".format(
                     comp_class, self._component_description[comp_class]
                 )
             )
