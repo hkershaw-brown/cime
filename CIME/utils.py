@@ -1426,16 +1426,28 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
 
     # Handle pre-existing file
     try:
-        if os.path.isfile(tgt_path):
-            copy_over_file(src_path, tgt_path)
+        if os.path.isfile(src_path):
+            if os.path.isfile(tgt_path):
+                copy_over_file(src_path, tgt_path)
 
-        elif preserve_meta:
-            # We are making a new file, copy file contents, permissions, and metadata.
-            # This can fail if the underlying directory is not writable by current user.
-            shutil.copy2(src_path, tgt_path)
+            elif preserve_meta:
+                # We are making a new file, copy file contents, permissions, and metadata.
+                # This can fail if the underlying directory is not writable by current user.
+                shutil.copy2(src_path, tgt_path)
 
+            else:
+                shutil.copy(src_path, tgt_path)
         else:
-            shutil.copy(src_path, tgt_path)
+            # Some of the archived "files" are directories, like ADIOS BP output "files"
+            if preserve_meta:
+                shutil.copytree(src_path, tgt_path, dirs_exist_ok=True)
+            else:
+                shutil.copytree(
+                    src_path,
+                    tgt_path,
+                    dirs_exist_ok=True,
+                    copy_function=shutil.copyfile,
+                )
 
     except OSError:
         # Some systems get weird OSErrors when using shutil copy, try an
@@ -1444,7 +1456,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
         # cp is not in PATH, we must give up and raise the original err
         if cp_path is None:
             raise
-        run_cmd_no_fail(f"{cp_path} -f {src_path} {tgt_path}")
+        run_cmd_no_fail(f"{cp_path} -f -r {src_path} {tgt_path}")
 
     # If src file was executable, then the tgt file should be too
     st = os.stat(tgt_path)
@@ -2255,7 +2267,7 @@ def find_system_test(testname, case):
     if testname.startswith("TEST"):
         system_test_path = "CIME.SystemTests.system_tests_common.{}".format(testname)
     else:
-        components = ["any"]
+        components = ["any", "allactive"]
         components.extend(case.get_compset_components())
         fdir = []
         for component in components:
@@ -2264,6 +2276,11 @@ def find_system_test(testname, case):
             )
             if tdir is not None:
                 tdir = os.path.abspath(tdir)
+                if tdir in fdir:
+                    # This can happen if multiple SYSTEM_TESTS_DIRs resolve to the same
+                    # path; in this case, we just want to handle the first occurrence and
+                    # skip the rest.
+                    continue
                 system_test_file = os.path.join(tdir, "{}.py".format(testname.lower()))
                 if os.path.isfile(system_test_file):
                     fdir.append(tdir)
