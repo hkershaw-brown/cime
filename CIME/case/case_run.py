@@ -24,7 +24,7 @@ def _pre_run_check(case, lid, skip_pnl=False, da_cycle=0):
 
     # Pre run initialization code..
     if da_cycle > 0:
-        case.create_namelists(component="cpl")
+        case.create_namelists()
         return
 
     caseroot = case.get_value("CASEROOT")
