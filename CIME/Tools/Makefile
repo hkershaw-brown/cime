@@ -1037,12 +1037,10 @@ cleaniac:
 cleanesp:
 	$(RM) -f $(LIBROOT)/libesp.a
 	$(RM) -fr $(EXEROOT)/esp/obj
-	@if [ -f $(EXEROOT)/esp/quickbuild.sh ]; then \
-        	cd $(EXEROOT)/esp && sh ./quickbuild.sh clean; \
- 	fi
-	$(RM) -fr $(EXEROOT)/esp/quickbuild.sh
-	$(RM) -fr $(EXEROOT)/esp/preprocess.log
-	$(RM) -fr $(EXEROOT)/esp/input.nml
+	@if [ -f $(EXEROOT)/esp/clean_build ]; then \
+    		cd $(EXEROOT)/esp && sh ./clean_build; \
+	fi
+	$(RM) -f $(EXEROOT)/esp/clean_build
 
 cleanglc:
 	$(RM) -f $(LIBROOT)/libglc.a
