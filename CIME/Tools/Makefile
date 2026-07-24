@@ -1037,6 +1037,10 @@ cleaniac:
 cleanesp:
 	$(RM) -f $(LIBROOT)/libesp.a
 	$(RM) -fr $(EXEROOT)/esp/obj
+	@if [ -f $(EXEROOT)/esp/clean_build ]; then \
+    		cd $(EXEROOT)/esp && sh ./clean_build; \
+	fi
+	$(RM) -f $(EXEROOT)/esp/clean_build
 
 cleanglc:
 	$(RM) -f $(LIBROOT)/libglc.a
