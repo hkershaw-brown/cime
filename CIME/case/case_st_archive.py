@@ -495,7 +495,6 @@ def _archive_restarts_date(
     if components is None:
         components = case.get_compset_components()
         components.append("drv")
-        components.append("dart")
 
     histfiles_savein_rundir_by_compname = {}
 
@@ -925,7 +924,6 @@ def _archive_process(
     if components is None:
         components = case.get_compset_components()
         components.append("drv")
-        components.append("dart")
 
     archive_file_fn = _get_archive_file_fn(copy_only)
 
@@ -1284,13 +1282,12 @@ def test_env_archive(self, testdir="env_archive_test"):
             )
         if comp_expected == "cpl":
             comp_expected = "drv"
-        if comp_expected != "dart":
-            expect(
-                comp_expected in comps_in_case,
-                "env_archive defines component {} not defined in case".format(
-                    comp_expected
-                ),
-            )
+        expect(
+            comp_expected in comps_in_case,
+            "env_archive defines component {} not defined in case".format(
+                comp_expected
+            ),
+        )
 
         test_file_names = archive.get_optional_child(
             "test_file_names", root=comp_archive_spec
@@ -1311,8 +1308,6 @@ def test_env_archive(self, testdir="env_archive_test"):
     expect(
         not components, "No archive entry found for components: {}".format(components)
     )
-    if "dart" not in comps_in_case:
-        comps_in_case.append("dart")
     logger.info("testing components: {} ".format(comps_in_case))
     _archive_process(
         self,
